@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import spring.boot.example.SpringBootApp311.model.User;
 import spring.boot.example.SpringBootApp311.service.UserService;
 
@@ -43,8 +44,14 @@ public class UsersController {
         return "views/delete";
     }
     @PostMapping("/delete")
-    public String delete(@RequestParam Integer id) {
-        userService.deleteUser(id);
+    public String delete(@RequestParam Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", "There is no user with this id: " + id);
+            return "redirect:/users/deleteUser";
+        }
+
         return "redirect:/users";
     }
     @GetMapping("/editUser")
